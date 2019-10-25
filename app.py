@@ -8,8 +8,9 @@ from optimizers import standard as optimize_standard
 app = Flask(__name__)
 
 optimize_args = {
-    "date": fields.Date(required=True),
-    "site": fields.String(require=True, validate=validate.OneOf(["fd"])),
+    "date":    fields.Date(required=True),
+    "site":    fields.String(require=True, validate=validate.OneOf(["fd"])),
+    "exclude": fields.List(fields.Int(), missing=[])
     }
 
 @app.errorhandler(422)
@@ -27,7 +28,10 @@ def handle_unprocessable_entity(err):
 @app.route('/optimize')
 @use_args(optimize_args)
 def optimize(args):
-    tops = optimize_standard(args['date'], site=args['site'])
+    tops = optimize_standard(args['date'], site=args['site'], exclude=args['exclude'])
+    print('qwerqwer')
+    print(tops)
+    print('asdfasdf')
     return jsonify(tops)
 
 if __name__ == '__main__':
