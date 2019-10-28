@@ -2,14 +2,35 @@ from calculate import solve
 from finders import get_stat_lines_for_date, get_actual_points_sal_for_ids
 
 
+class OptimizeError(Exception):
+    def __init__(self, errvals):
+        self.errvals = errvals
+        self.code = 400
+
+
+def validate_cludes(include, exclude):
+    matches = set(include) & set(exclude)
+    if len(matches) > 0:
+        message = 'Same players id(s) in both include and exclude'
+        ids = list(matches)
+        return {'message': message, 'vals': ids}
+    return None
+
+
 def standard(date, projection_version='', site='fd', exclude=[], include=[]):
     # in the future, if there are different rules or you have a keeper player
     # who is alreay set in a position, we can change this and still get a valid
     # lineup
+
+    errors = validate_cludes(include, exclude)
+    if errors:
+        raise OptimizeError(errors)
+
     combo_positions_dict = {'PG': 2, 'SG': 2, 'SF': 2, 'PF': 2, 'C': 1}
 
     remove_players = exclude + include
-    df = get_stat_lines_for_date(date, projection_version, exclude=remove_players)
+    df = get_stat_lines_for_date(
+        date, projection_version, exclude=remove_players)
 
     fin = solve(combo_positions_dict, df)
     winner = fin[1]
