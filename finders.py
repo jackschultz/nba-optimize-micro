@@ -7,46 +7,6 @@ select_stat_lines_by_date = "select player_id as pid, fd_name as name, fd_positi
 select_main_str = f"select sum(fd_points), sum(fd_salary) from stat_line_points where player_id in %s and date='%s';"
 
 
-
-query_string = '''
-SELECT
-	slp.player_id AS pid,
-	slp.name,
-	slp.fd_positions AS pos,
-	slp.fd_salary AS sal,
-	((proj.minutes / 36.0) * slp.fdpp36) AS pts
-FROM
-	stat_line_points slp,
-	projections proj
-WHERE
-	proj.stat_line_id = slp.slid
-	AND proj. "source" = 'fte'
-	AND slp.date = '%s'
-	AND slp.fdpp36 IS NOT NULL
-	AND slp.player_id NOT IN %s;
-'''
-
-query_string = '''
-SELECT
-	slp.player_id AS pid,
-	slp.name,
-	slp.fd_positions AS pos,
-	slp.fd_salary AS sal,
-	((proj.minutes / 36.0) * slp.avgfdpp36) AS pts
-FROM
-	slpp slp,
-	projections proj
-WHERE
-	proj.stat_line_id = slp.slid
-	AND proj. "source" = 'self'
-	AND slp.date = '%s'
-	AND slp.avgfdpp36 IS NOT NULL
-	AND proj.minutes IS NOT NULL
-	AND proj.active
-	AND slp.player_id NOT IN %s;
-'''
-
-
 query_string_self_projection = '''
 SELECT
 	p.id AS pid,
@@ -63,13 +23,13 @@ WHERE
 	sl.game_id = g.id
 	AND proj.source = 'self'
 	AND proj.stat_line_id = sl.id
-	AND proj.version = '%s'
+	AND proj.version = %s
 	AND sl.player_id = p.id
-	AND g.date = '%s'
+	AND g.date = %s
 	AND sl.fd_positions IS NOT NULL
 	AND proj.fd_points IS NOT NULL
 	AND proj.minutes > 0.0
-	AND sl.player_id NOT IN %s
+	AND sl.player_id not in %s
 	AND sl.active;
 '''
 
@@ -87,12 +47,8 @@ def get_actual_points_sal_for_ids(player_ids, date):
 	return points, salary
 
 
-def get_stat_lines_for_date(date, version, exclude=[]):
-	vals = (date, tuple(exclude)) if exclude else (date)
-	sql_str = query_string_self_projection % (version, date, tuple(exclude))
-	df = pd.read_sql_query(sql_str, conn)
+def get_stat_lines_for_date(date, version, exclude=[0]):
+	params = (version, date, tuple(exclude),)
+	df = pd.read_sql_query(query_string_self_projection, conn, params=params)
 	print(df)
 	return df
-
-if __name__ == '__main__':
-    print(get_stat_lines_for_date('2019-01-01'))

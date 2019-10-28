@@ -3,8 +3,6 @@ import itertools
 
 import numpy as np
 import pandas as pd
-import pdb
-pry = pdb.set_trace #yeah, I have a ruby background too
 
 def calc_sal_ranges(num_players):
     return np.array(list(range(3500*num_players, 60000+100, 100)))

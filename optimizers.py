@@ -17,10 +17,11 @@ def validate_cludes(include, exclude):
     return None
 
 
-def standard(date, projection_version='', site='fd', exclude=[], include=[]):
+def standard(date, projection_version='', site='fd', exclude=[0], include=[]):
     # in the future, if there are different rules or you have a keeper player
     # who is alreay set in a position, we can change this and still get a valid
     # lineup
+    # Defaulting exclude to [0] so we always have an array with values for the query
 
     errors = validate_cludes(include, exclude)
     if errors:
@@ -28,7 +29,7 @@ def standard(date, projection_version='', site='fd', exclude=[], include=[]):
 
     combo_positions_dict = {'PG': 2, 'SG': 2, 'SF': 2, 'PF': 2, 'C': 1}
 
-    remove_players = exclude + include
+    remove_players = (exclude + include) or [0] # no ids of 0 in the db, so we can query for not in
     df = get_stat_lines_for_date(
         date, projection_version, exclude=remove_players)
 
