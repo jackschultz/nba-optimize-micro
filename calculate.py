@@ -107,7 +107,7 @@ def restrict_and_merge(ids_comb, points_comb, sal_comb, sal_ranges):
     max_inds = ids_comb_full[row_selectors, top_inds]
     return sal_ranges, max_inds, max_points, max_sals
 
-def solve(combo_positions_dict, df):
+def solve(combo_positions_dict, max_salary, df):
 
     tops={}
     for position, num_players in combo_positions_dict.items():

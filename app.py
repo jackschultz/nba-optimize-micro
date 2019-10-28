@@ -8,7 +8,7 @@ from optimizers import standard as optimize_standard, OptimizeError
 
 app = Flask(__name__)
 
-version_types = ['0.1-avg-5', '0.1-avg-8', '0.1-std-ceil-5']
+version_types = ['0.1-avg-05', '0.1-avg-08', '0.1-std-ceil-05']
 
 optimize_args = {
     "date":    fields.Date(required=True),

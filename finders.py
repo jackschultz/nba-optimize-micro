@@ -9,28 +9,24 @@ select_main_str = f"select sum(fd_points), sum(fd_salary) from stat_line_points 
 
 query_string_self_projection = '''
 SELECT
-	p.id AS pid,
-	p.fd_name AS name,
-	sl.fd_positions AS pos,
-	sl.fd_salary AS sal,
+	slp.player_id AS pid,
+	slp.name AS name,
+	slp.fd_positions AS pos,
+	slp.fd_salary AS sal,
 	proj.fd_points AS pts
 FROM
-	stat_lines sl,
-	games g,
-	players p,
+	stat_line_points slp,
 	projections proj
 WHERE
-	sl.game_id = g.id
-	AND proj.source = 'self'
-	AND proj.stat_line_id = sl.id
+	proj.source = 'self'
+	AND proj.stat_line_id = slp.stat_line_id
 	AND proj.version = %s
-	AND sl.player_id = p.id
-	AND g.date = %s
-	AND sl.fd_positions IS NOT NULL
+	AND slp.date = %s
+	AND slp.fd_positions IS NOT NULL
 	AND proj.fd_points IS NOT NULL
 	AND proj.minutes > 0.0
-	AND sl.player_id not in %s
-	AND sl.active;
+	AND slp.player_id not in %s
+	AND slp.active;
 '''
 
 
@@ -48,7 +44,31 @@ def get_actual_points_sal_for_ids(player_ids, date):
 
 
 def get_stat_lines_for_date(date, version, exclude=[0]):
-	params = (version, date, tuple(exclude),)
-	df = pd.read_sql_query(query_string_self_projection, conn, params=params)
-	print(df)
-	return df
+    params = (version, date, tuple(exclude),)
+    df = pd.read_sql_query(query_string_self_projection, conn, params=params)
+    print(df)
+    return df
+
+player_columns = ['id', 'dk_name', 'fd_name',
+                  'br_name', 'rg_name', 'current_team_id', 'fte_name']
+
+stat_line_points_columns = ["name", "abbrv", "date", "minutes", "dk_positions", "dk_salary", "dk_points", "dkpp36", "fd_salary", "fd_points", "fdpp36", "player_id", "stat_line_id", "season"]
+
+
+def find_player_by_id(pid):
+    sql_str = f'select * from players where id={pid}'
+    cursor.execute(sql_str)
+    player_info = cursor.fetchone()
+    if not player_info:
+        return None
+    return dict(zip(player_columns, player_info))
+
+def find_stat_line_on_date_for_player(date, pid):
+    sql_str = f"select * from stat_line_points where date = '{date}' and player_id = {pid}"
+    cursor.execute(sql_str)
+    stat_line_points_info = cursor.fetchone()
+    if not stat_line_points_info:
+        return None
+    return dict(zip(stat_line_points_columns, stat_line_points_info))
+
+
