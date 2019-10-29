@@ -52,7 +52,7 @@ def get_stat_lines_for_date(date, version, exclude=[0]):
 player_columns = ['id', 'dk_name', 'fd_name',
                   'br_name', 'rg_name', 'current_team_id', 'fte_name']
 
-stat_line_points_columns = ["name", "abbrv", "date", "minutes", "dk_positions", "dk_salary", "dk_points", "dkpp36", "fd_salary", "fd_points", "fdpp36", "player_id", "stat_line_id", "season"]
+stat_line_points_columns = ["name", "abbrv", "date", "minutes", "dk_positions", "dk_salary", "dk_points", "dkpp36", "fd_salary", "fd_positions", "fd_points", "fdpp36", "player_id", "stat_line_id", "season"]
 
 
 def find_player_by_id(pid):

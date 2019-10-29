@@ -5,6 +5,7 @@ from webargs.flaskparser import use_args
 
 
 from optimizers import standard as optimize_standard, OptimizeError
+from lineups import LineupError
 
 app = Flask(__name__)
 
@@ -41,7 +42,7 @@ def optimize_error_handler(err):
 def optimize(args):
     try:
         tops = optimize_standard(args['date'], projection_version=args['version'],
-                                 site=args['site'], exclude=args['exclude'], include=args['include'])
+                                 site=args['site'], excludes=args['exclude'], includes=args['include'])
     except OptimizeError as err:
         raise err
     else:

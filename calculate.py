@@ -4,11 +4,11 @@ import itertools
 import numpy as np
 import pandas as pd
 
-def calc_sal_ranges(num_players):
-    return np.array(list(range(3500*num_players, 60000+100, 100)))
+def calc_sal_ranges(num_players, max_salary):
+    return np.array(list(range(3500*num_players, max_salary+100, 100)))
 
-def combine_single_position(position, num_players, df):
-    posdf = df[df.pos == position]#.sort_values(by='sal')
+def combine_single_position(position, num_players, max_salary, df):
+    posdf = df[df.pos == position]
     posdf_indicies = posdf.index.values
     points = posdf['pts'].values
     sals = posdf['sal'].values
@@ -18,13 +18,11 @@ def combine_single_position(position, num_players, df):
     points_comb = np.array(list(itertools.combinations(points, num_players)))
     sal_comb = np.array(list(itertools.combinations(sals, num_players)))
 
-    sal_ranges = calc_sal_ranges(num_players)
-    #num_players, inds_comb, points_comb, sal_comb, sal_ranges
-
+    sal_ranges = calc_sal_ranges(num_players, max_salary)
 
     return restrict_and_merge(ids_comb, points_comb, sal_comb, sal_ranges)
 
-def combine_multiple_positions(pos1, pos2):
+def combine_multiple_positions(pos1, pos2, max_salary):
 
     #pos1 varaibles don't have a 1 at the end, pos 2 variables do at the beginning
 
@@ -49,12 +47,12 @@ def combine_multiple_positions(pos1, pos2):
     ids_comb = np.array([ np.concatenate((x,y)) for x,y in  list(itertools.product(shrunk_ids, shrunk_ids2))   ] )
 
     num_players = ids.shape[1] + ids2.shape[1]
-    sal_ranges = calc_sal_ranges(num_players)
+    sal_ranges = calc_sal_ranges(num_players, max_salary)
 
     return restrict_and_merge(ids_comb, points_comb, sals_comb, sal_ranges)
 
 
-def combine_all_positions(tops_array):
+def combine_all_positions(tops_array, max_salary):
     tops_array_len = len(tops_array)
     if tops_array_len == 1:
         return tops_array[0]
@@ -62,15 +60,15 @@ def combine_all_positions(tops_array):
         half_len = tops_array_len // 2 #we want this non floating
         half1 = tops_array[:half_len]
         half2 = tops_array[half_len:]
-        half1top = combine_all_positions(half1)
-        half2top = combine_all_positions(half2)
+        half1top = combine_all_positions(half1, max_salary)
+        half2top = combine_all_positions(half2, max_salary)
 
         players_in_first = len(half1top[1][1])
         players_in_second = len(half2top[1][1])
         players_in_combo = players_in_first + players_in_second
         print('Players in combining combo:', players_in_combo)
 
-        return combine_multiple_positions(half1top, half2top)
+        return combine_multiple_positions(half1top, half2top, max_salary)
 
 
 def restrict_and_merge(ids_comb, points_comb, sal_comb, sal_ranges):
@@ -109,10 +107,13 @@ def restrict_and_merge(ids_comb, points_comb, sal_comb, sal_ranges):
 
 def solve(combo_positions_dict, max_salary, df):
 
+    print(f'Solving with {max_salary}')
     tops={}
     for position, num_players in combo_positions_dict.items():
         print(f"Calculating initial positions for {position}")
-        tops[position] = combine_single_position(position, num_players, df)
+        if num_players == 0:
+            continue
+        tops[position] = combine_single_position(position, num_players, max_salary, df)
 
     tops_array = [vals for pos, vals in tops.items()]
-    return combine_all_positions(tops_array)
+    return combine_all_positions(tops_array, max_salary)
