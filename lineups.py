@@ -1,5 +1,7 @@
 from calculate import solve
-from finders import get_stat_lines_for_date, get_actual_points_sal_for_ids, find_stat_line_on_date_for_player
+from finders import get_stat_lines_for_date, get_actual_points_sal_for_ids
+
+from db import actor
 
 import numpy as np
 
@@ -40,7 +42,7 @@ class FanDuelLineup(Lineup):
         vals = []
         for pid in self.includes:
             #find the player and make sure he has a stat line for that date
-            slpi = find_stat_line_on_date_for_player(self.date, pid)
+            slpi = actor.find_stat_line_by_player_and_date(pid, self.date)
             if not slpi:
                 vals.append(pid)
             else:

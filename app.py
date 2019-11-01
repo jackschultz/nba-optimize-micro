@@ -1,4 +1,5 @@
 from flask import Flask, jsonify, abort
+from flask_cors import CORS
 
 from webargs import fields, validate
 from webargs.flaskparser import use_args
@@ -8,8 +9,9 @@ from optimizers import standard as optimize_standard, OptimizeError
 from lineups import LineupError
 
 app = Flask(__name__)
+cors = CORS(app)
 
-version_types = ['0.1-avg-05', '0.1-avg-08', '0.1-std-ceil-05']
+version_types = ['0.1-avg-01', '0.1-avg-02', '0.1-avg-03', '0.1-avg-05', '0.1-avg-08', '0.1-std-ceil-05', '0.1-avg-fte-min-02', '0.1-avg-fte-min-03', '0.1-avg-fte-min-05']
 
 optimize_args = {
     "date":    fields.Date(required=True),

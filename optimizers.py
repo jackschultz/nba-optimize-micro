@@ -1,5 +1,3 @@
-from finders import get_stat_lines_for_date, get_actual_points_sal_for_ids, find_stat_line_on_date_for_player
-
 from lineups import FanDuelLineup, LineupError
 
 class OptimizeError(Exception):
