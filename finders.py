@@ -35,13 +35,14 @@ def get_actual_points_sal_for_ids(player_ids, date):
 	if not player_ids:
 		raise ValueError('No player ids.')
 	asdf = select_main_str % (tuple(player_ids), date)
-	actor.cursor.execute(asdf)
-	qresult = actor.cursor.fetchone()
+	cursor = actor.cursor
+	cursor.execute(asdf)
+	qresult = cursor.fetchone()
 	print('actual info')
 	print('done actual info')
 	points = qresult['points']
 	salary = qresult['salary']
-	if points:
+	if points != None:
 		points = float(points)
 	return points, salary
 

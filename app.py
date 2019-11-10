@@ -11,7 +11,10 @@ from lineups import LineupError
 app = Flask(__name__)
 cors = CORS(app)
 
-version_types = ['0.1-avg-01', '0.1-avg-02', '0.1-avg-03', '0.1-avg-05', '0.1-avg-08', '0.1-std-ceil-05', '0.1-avg-fte-min-02', '0.1-avg-fte-min-03', '0.1-avg-fte-min-05']
+version_types = ['0.1-dfn-min-avg-03', '0.1-dfn-min-avg-05',
+                 '0.1-dfn-min-ceil-03', '0.1-dfn-min-ceil-05',
+                 '0.1-dfn-min-floor-03', '0.1-dfn-min-floor-05'
+                 ]
 
 optimize_args = {
     "date":    fields.Date(required=True),
@@ -42,6 +45,7 @@ def optimize_error_handler(err):
 @app.route('/optimize')
 @use_args(optimize_args)
 def optimize(args):
+    print(args['exclude'])
     try:
         tops = optimize_standard(args['date'], projection_version=args['version'],
                                  site=args['site'], excludes=args['exclude'], includes=args['include'])

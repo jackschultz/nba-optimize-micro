@@ -105,6 +105,7 @@ class FanDuelLineup(Lineup):
             winning_ids = winner[-1]
 
         top_players = df.iloc[winning_ids]
+
         print("\n")
         print(top_players)
 
@@ -131,6 +132,18 @@ class FanDuelLineup(Lineup):
         actuals['points'] = actual_points
         retval['actuals'] = actuals
 
-        retval['players'] = top_players.to_dict('records')
+        top_player_projections = top_players.to_dict('records')
+        top_pid_stat_lines = actor.find_stat_line_points_on_date_for_player_ids(self.date, tuple(top_pids))
+
+        for sl in top_pid_stat_lines:
+            for tp in top_player_projections:
+                if sl['player_id'] == tp['pid']:
+                    tp['act_fd_pts'] = float(sl['fd_points']) if sl['fd_points'] else 0
+                    tp['act_dk_pts'] = float(sl['dk_points']) if sl['dk_points'] else 0
+                    tp['act_mins'] = float(sl['minutes']) if sl['minutes'] else 0
+                    break
+
+        retval['players'] = top_player_projections
+
 
         return retval
