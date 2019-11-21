@@ -11,10 +11,7 @@ from lineups import LineupError
 app = Flask(__name__)
 cors = CORS(app)
 
-version_types = ['0.1-dfn-min-avg-03', '0.1-dfn-min-avg-05',
-                 '0.1-dfn-min-ceil-03', '0.1-dfn-min-ceil-05',
-                 '0.1-dfn-min-floor-03', '0.1-dfn-min-floor-05'
-                 ]
+version_types = [ '0.2-lin-reg-dfn-min', '0.2-lin-reg-rg-min', '0.1-dfn', '0.1-rg']
 
 optimize_args = {
     "date":    fields.Date(required=True),

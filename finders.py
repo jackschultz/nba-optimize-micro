@@ -18,8 +18,7 @@ FROM
 	stat_line_points slp,
 	projections proj
 WHERE
-	proj.source = 'self'
-	AND proj.stat_line_id = slp.stat_line_id
+	proj.stat_line_id = slp.stat_line_id
 	AND proj.version = %s
 	AND slp.date = %s
 	AND slp.fd_positions IS NOT NULL

@@ -89,6 +89,7 @@ class FanDuelLineup(Lineup):
         Optimize the remaining parts of the lineup based on version
         '''
         df = self.possible_stat_lines(version)
+
         if df.empty:
             raise(LineupError({'message': 'Database returned no players to optimize with.'}))
         
@@ -137,10 +138,14 @@ class FanDuelLineup(Lineup):
 
         for sl in top_pid_stat_lines:
             for tp in top_player_projections:
+                print(sl)
                 if sl['player_id'] == tp['pid']:
                     tp['act_fd_pts'] = float(sl['fd_points']) if sl['fd_points'] else 0
                     tp['act_dk_pts'] = float(sl['dk_points']) if sl['dk_points'] else 0
                     tp['act_mins'] = float(sl['minutes']) if sl['minutes'] else 0
+                    #info
+                    tp['fd_id'] = sl['fd_id']
+                    tp['dk_id'] = sl['dk_id']
                     break
 
         retval['players'] = top_player_projections
